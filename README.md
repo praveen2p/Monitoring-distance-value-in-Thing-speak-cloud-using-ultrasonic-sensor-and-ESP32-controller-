@@ -1,4 +1,7 @@
-# Monitoring-distance-value-in-Thing-speak-cloud-using-ultrasonic-sensor-and-ESP32-controller
+#### NAME:PRAVEEN.K
+#### REG.NO:212223040152
+
+# EX 06: Monitoring distance value in Thing speak cloud using ultrasonic sensor and ESP32 controller
 
 # Uploading ultrasonic sensor data in Thing Speak cloud
 
@@ -96,8 +99,67 @@ Prototype and build IoT systems without setting up servers or developing web sof
 
  
 # PROGRAM:
+```
+#include "ThingSpeak.h"
+#include <WiFi.h>
+
+char ssid[] = "Praveenkp"; //SSID
+char pass[] = "kalaikp1"; // Password
+
+const int trigger = 25;
+const int echo = 26;
+long T;
+float distanceCM;
+WiFiClient  client;
+
+unsigned long myChannelField = 2729919; // Channel ID
+const int ChannelField = 1; // Which channel to write data
+const char * myWriteAPIKey = "FE5V6UNFY0C2I1GY"; // Your write API Key
+
+void setup()
+{
+  Serial.begin(115200);
+  pinMode(trigger, OUTPUT);
+  pinMode(echo, INPUT);
+  WiFi.mode(WIFI_STA);
+  ThingSpeak.begin(client);
+}
+void loop()
+{
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected.");
+  }
+  digitalWrite(trigger, LOW);
+  delay(1);
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigger, LOW);
+  T = pulseIn(echo, HIGH);
+  distanceCM = T * 0.034; //340 m/s or 0.034 cm/microsec
+  distanceCM = distanceCM / 2;
+  Serial.print("Distance in cm: ");
+  Serial.println(distanceCM);
+  Serial.println(T);
+  ThingSpeak.writeField(myChannelField, ChannelField, distanceCM, myWriteAPIKey);
+  delay(1000);
+}
+
+```
 # CIRCUIT DIAGRAM:
+![WhatsApp Image 2024-11-23 at 18 02 47_852025c2](https://github.com/user-attachments/assets/7874281b-0f58-4cf9-b740-afa605118fe9)
+
 # OUTPUT:
+![Screenshot 2024-11-06 091346](https://github.com/user-attachments/assets/05747fee-501c-4a27-90c0-9b71fff6d9bd)
+
 # RESULT:
 Thus the distance values are updated in the Thing speak cloud using ESP32 controller.
 
